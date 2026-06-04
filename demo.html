@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Best Barber</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg: #111009;
+  --bg2: #1a1810;
+  --bg3: #242018;
+  --gold: #d4a843;
+  --gold2: #f0c96a;
+  --gold3: #8a6a1a;
+  --red: #c0392b;
+  --white: #f5f0e8;
+  --muted: #7a7060;
+  --border: rgba(212,168,67,0.18);
+  --p-coupe: #b8763a;
+  --p-barbe: #7a4a2a;
+  --p-soin: #2f6f5e;
+  --p-cire: #c0392b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; background:var(--bg); color:var(--white); font-family:'Barlow Condensed',sans-serif; overflow:hidden; }
+
+/* grain global */
+body::before {
+  content:''; position:fixed; inset:0; z-index:999; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.4;
+}
+
+/* ─── SCREENS ─── */
+.screen { position:fixed; inset:0; display:flex; flex-direction:column; opacity:0; pointer-events:none; transition:opacity 0.38s ease; overflow:hidden; }
+.screen.active { opacity:1; pointer-events:all; }
+
+/* ─── STRIPE BARBER ─── */
+.stripe {
+  width:8px; flex-shrink:0; border-radius:4px;
+  background:repeating-linear-gradient(180deg,var(--red) 0px,var(--red) 14px,var(--white) 14px,var(--white) 28px,#1a3a6a 28px,#1a3a6a 42px);
+}
+
+/* ═══════════════════════
+   ÉCRAN 1 — ACCUEIL
+═══════════════════════ */
+#s-home {
+  background:radial-gradient(ellipse at 50% 0%,#2a2010 0%,var(--bg) 65%);
+  justify-content:space-between; align-items:center;
+}
+
+.home-top {
+  width:100%; display:flex; flex-direction:column; align-items:center;
+  padding:44px 24px 0;
+  animation:slideDown 0.6s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideDown { from{transform:translateY(-30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+.home-badge {
+  display:flex; align-items:center; gap:8px;
+  background:var(--bg3); border:1px solid var(--border); border-radius:100px;
+  padding:6px 16px; margin-bottom:28px;
+  animation:fadeIn 0.8s 0.3s both;
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.badge-dot { width:7px; height:7px; background:var(--gold); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.6} }
+.badge-text { font-size:0.7rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+
+/* logo avec halo attract */
+.home-logo-wrap { position:relative; margin-bottom:20px; animation:popIn 0.7s 0.15s cubic-bezier(.34,1.4,.64,1) both; }
+@keyframes popIn { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+.home-logo-circle {
+  width:120px; height:120px; border-radius:50%; border:2px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg2); overflow:hidden; position:relative;
+  box-shadow:0 0 40px rgba(212,168,67,0.15), inset 0 0 20px rgba(0,0,0,0.5);
+}
+.home-logo-circle img { width:104px; height:104px; object-fit:contain; }
+.home-logo-circle::after {
+  content:''; position:absolute; inset:-30px; border-radius:50%; z-index:-1;
+  background:radial-gradient(circle,rgba(212,168,67,.35),transparent 65%);
+  animation:breathe 4.5s ease-in-out infinite;
+}
+@keyframes breathe { 0%,100%{transform:scale(1);opacity:.5} 50%{transform:scale(1.25);opacity:.9} }
+
+.home-title { font-family:'Oswald',sans-serif; font-size:3.4rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:var(--white); line-height:0.95; text-align:center; animation:fadeIn 0.6s 0.35s both; }
+.home-title span { color:var(--gold); display:block; }
+.home-sub { margin-top:8px; font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); animation:fadeIn 0.6s 0.5s both; }
+.home-divider { width:50px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:16px auto; animation:fadeIn 0.6s 0.55s both; }
+
+.home-tagline { font-size:1.05rem; color:#c0b89a; text-align:center; line-height:1.5; max-width:270px; animation:fadeIn 0.6s 0.6s both; }
+.home-social { margin-top:10px; font-size:0.82rem; color:var(--gold3); font-weight:600; animation:fadeIn 0.6s 0.7s both; }
+
+/* ticker attract loop */
+.attract-ticker {
+  margin-top:16px; text-align:center;
+  font:300 0.8rem 'Barlow Condensed',sans-serif; color:var(--muted); letter-spacing:.05em;
+  min-height:1.2em; animation:fadeIn 1s 1s both;
+}
+.attract-ticker b { color:var(--gold); font-weight:600; }
+
+.home-bottom { width:100%; padding:0 24px 48px; display:flex; flex-direction:column; align-items:center; gap:12px; animation:slideUp 0.6s 0.4s cubic-bezier(.22,1,.36,1) both; }
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+.btn-commander {
+  width:100%; max-width:340px; padding:20px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%);
+  background-size:200% 100%;
+  border:none; border-radius:14px;
+  font-family:'Oswald',sans-serif; font-size:1.4rem; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; color:#111009; cursor:pointer;
+  position:relative; overflow:hidden;
+  box-shadow:0 4px 24px rgba(212,168,67,0.35);
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.btn-commander:active { transform:scale(0.97); box-shadow:0 2px 12px rgba(212,168,67,0.2); }
+.btn-commander::after {
+  content:'→'; position:absolute; right:20px; top:50%; transform:translateY(-50%);
+  font-size:1.2rem; animation:nudge 3s ease-in-out infinite;
+}
+@keyframes nudge { 0%,85%,100%{transform:translateY(-50%) translateX(0)} 90%{transform:translateY(-50%) translateX(6px)} }
+
+.home-features { display:flex; gap:20px; padding-top:4px; }
+.feat { display:flex; align-items:center; gap:6px; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+.feat-dot { width:5px; height:5px; background:var(--gold3); border-radius:50%; }
+
+/* ═══════════════════════
+   ÉCRAN 2 — PRODUITS
+═══════════════════════ */
+#s-products { background:var(--bg); }
+
+.products-header {
+  padding:18px 20px 14px; border-bottom:1px solid var(--border);
+  background:var(--bg2); flex-shrink:0; display:flex; align-items:center; gap:14px;
+}
+.products-header-logo { font-family:'Oswald',sans-serif; font-size:1.4rem; font-weight:700; color:var(--gold); letter-spacing:0.06em; }
+.products-header-sub { font-size:0.65rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-top:1px; }
+
+.products-scroll { flex:1; overflow-y:auto; padding:16px 16px 110px; -webkit-overflow-scrolling:touch; }
+
+.section-label {
+  font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--gold3); margin-bottom:14px; padding-left:2px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ─── CARD PRODUIT v2 ─── */
+.pcard {
+  position:relative; border-radius:20px; overflow:hidden;
+  background:var(--bg2); cursor:pointer; margin-bottom:14px;
+  border:1px solid rgba(255,255,255,0.05);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 12px 28px -12px rgba(0,0,0,.7), 0 2px 6px -2px rgba(0,0,0,.5);
+  transform:translateZ(0);
+  transition:transform .25s cubic-bezier(.34,1.3,.64,1), box-shadow .25s, border-color .2s;
+}
+.pcard:active { transform:scale(.985); }
+.pcard.selected {
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent) inset, 0 14px 34px -10px color-mix(in srgb,var(--accent) 45%,transparent), 0 2px 6px -2px rgba(0,0,0,.5);
+}
+
+/* hero image */
+.pcard-hero {
+  position:relative; height:136px; overflow:hidden;
+  background:
+    radial-gradient(120% 90% at 70% 10%,color-mix(in srgb,var(--accent,var(--gold)) 55%,transparent) 0%,transparent 60%),
+    radial-gradient(80% 80% at 20% 90%,rgba(0,0,0,.6),transparent 70%),
+    linear-gradient(135deg,color-mix(in srgb,var(--accent,var(--gold)) 40%,#1a1610) 0%,#14110a 100%);
+}
+.pcard-hero::after {
+  content:''; position:absolute; inset:0; opacity:.45;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+}
+.pcard-glyph {
+  position:absolute; right:14px; bottom:-8px;
+  font-size:5rem; line-height:1;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.6));
+  transition:transform .3s cubic-bezier(.34,1.4,.64,1);
+}
+.pcard.selected .pcard-glyph { transform:scale(1.12) rotate(-4deg); }
+
+.pcard-tag {
+  position:absolute; top:12px; left:12px;
+  font:600 .58rem/1 'Barlow Condensed',sans-serif; letter-spacing:.16em; text-transform:uppercase;
+  color:#111; background:var(--gold); padding:5px 9px; border-radius:6px;
+}
+.pcard-tag.red { background:var(--red); color:#fff; }
+
+.pcard-check {
+  position:absolute; top:12px; right:12px;
+  width:34px; height:34px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.3); background:rgba(0,0,0,.3);
+  backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:1.1rem;
+  transition:all .2s cubic-bezier(.34,1.4,.64,1);
+}
+.pcard.selected .pcard-check { background:var(--accent,var(--gold)); border-color:var(--accent,var(--gold)); color:#111; transform:scale(1.08); }
+
+.pcard-body { padding:12px 16px 16px; display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.pcard-info { flex:1; }
+.pcard-name { font:600 1.25rem/1 'Oswald',sans-serif; letter-spacing:.03em; }
+.pcard-desc { font:300 .82rem/1.35 'Barlow Condensed',sans-serif; color:var(--muted); margin-top:4px; }
+.pcard-social { font:400 .72rem 'Barlow Condensed',sans-serif; color:var(--gold3); margin-top:5px; }
+.pcard-price { font:700 1.6rem/1 'Oswald',sans-serif; color:var(--accent,var(--gold)); white-space:nowrap; }
+
+/* pack combo */
+.pack-card {
+  border-radius:16px; overflow:hidden; margin-bottom:14px; cursor:pointer;
+  background:linear-gradient(135deg,#1e1a0e,#2a2210);
+  border:1px solid var(--gold);
+  padding:16px 18px;
+  display:flex; justify-content:space-between; align-items:center;
+  transition:transform .2s, box-shadow .2s;
+  box-shadow:0 8px 28px -12px rgba(212,168,67,.25);
+}
+.pack-card:active { transform:scale(.985); }
+.pack-card.selected { box-shadow:0 0 0 1px var(--gold) inset, 0 12px 32px -8px rgba(212,168,67,.4); }
+.pack-label { font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:700; color:var(--gold); letter-spacing:.04em; }
+.pack-desc { font:300 .82rem 'Barlow Condensed',sans-serif; color:var(--muted); margin-top:3px; }
+.pack-save { font:600 .65rem 'Barlow Condensed',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:var(--gold3); margin-top:4px; }
+.pack-price { text-align:right; }
+.pack-price s { display:block; font:300 .85rem 'Barlow Condensed',sans-serif; color:var(--muted); }
+.pack-price b { font:700 1.8rem/1 'Oswald',sans-serif; color:var(--gold2); }
+.pack-check {
+  width:34px; height:34px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.2); background:rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1rem; margin-left:14px; flex-shrink:0;
+  transition:all .2s cubic-bezier(.34,1.4,.64,1);
+}
+.pack-card.selected .pack-check { background:var(--gold); border-color:var(--gold); color:#111; }
+
+/* barre panier */
+.cart-bar {
+  position:fixed; bottom:16px; left:16px; right:16px;
+  background:linear-gradient(135deg,#2a2010,#1e1800);
+  border:1px solid var(--gold); border-radius:16px;
+  padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer;
+  box-shadow:0 8px 32px rgba(0,0,0,.6), 0 0 20px rgba(212,168,67,.15);
+  opacity:0; pointer-events:none; transform:translateY(20px);
+  transition:opacity .3s, transform .4s cubic-bezier(.34,1.3,.64,1);
+}
+.cart-bar.visible { opacity:1; pointer-events:all; transform:translateY(0); }
+.cart-bar:active { transform:scale(.98); }
+.cart-left { display:flex; align-items:center; gap:10px; }
+.cart-bubble { background:var(--gold); color:#111; width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Oswald',sans-serif; font-size:1rem; font-weight:700; }
+.cart-cta { font-family:'Oswald',sans-serif; font-size:1rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--white); }
+.cart-cta small { display:block; font-family:'Barlow Condensed',sans-serif; font-size:0.7rem; font-weight:300; letter-spacing:0.08em; color:var(--muted); text-transform:none; margin-top:-2px; }
+.cart-amount { font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold); }
+
+/* ═══════════════════════
+   BUMP BOTTOM SHEET
+═══════════════════════ */
+.bump-scrim { position:fixed; inset:0; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .3s; z-index:40; }
+.bump-scrim.show { opacity:1; pointer-events:all; }
+.bump {
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  background:linear-gradient(180deg,#1f1a10,#16130c);
+  border-top:1px solid var(--border); border-radius:24px 24px 0 0;
+  padding:10px 20px 32px;
+  box-shadow:0 -20px 50px -12px rgba(0,0,0,.8);
+  transform:translateY(100%); transition:transform .42s cubic-bezier(.34,1.3,.64,1);
+}
+.bump.show { transform:translateY(0); }
+.bump::before { content:''; display:block; width:44px; height:4px; border-radius:99px; background:rgba(255,255,255,.18); margin:0 auto 18px; }
+.bump-head { display:flex; gap:14px; align-items:center; margin-bottom:6px; }
+.bump-glyph { font-size:2.6rem; filter:drop-shadow(0 6px 12px rgba(0,0,0,.5)); }
+.bump-title { font:600 1.3rem/1.1 'Oswald',sans-serif; letter-spacing:.02em; }
+.bump-title span { color:var(--gold); }
+.bump-sub { font:300 .9rem/1.5 'Barlow Condensed',sans-serif; color:var(--muted); margin:6px 0 18px; }
+.bump-actions { display:flex; gap:10px; }
+.bump-yes { flex:2; padding:16px; border:none; border-radius:14px; background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#111; font:700 1.05rem 'Oswald',sans-serif; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+.bump-no { flex:1; padding:16px; border:1px solid rgba(255,255,255,.08); border-radius:14px; background:transparent; color:var(--muted); font:400 .9rem 'Barlow Condensed',sans-serif; cursor:pointer; }
+
+/* ═══════════════════════
+   ÉCRAN 3 — RÉCAP
+═══════════════════════ */
+#s-recap { background:var(--bg); }
+.recap-header { padding:20px 20px 14px; border-bottom:1px solid var(--border); background:var(--bg2); flex-shrink:0; }
+.recap-header-title { font-family:'Oswald',sans-serif; font-size:1.5rem; font-weight:700; color:var(--gold); letter-spacing:0.06em; }
+.recap-header-sub { font-size:0.65rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-top:2px; }
+.recap-scroll { flex:1; overflow-y:auto; padding:20px 16px; }
+.recap-item { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.05); animation:slideInLeft .3s both; }
+@keyframes slideInLeft { from{transform:translateX(-20px);opacity:0} to{transform:translateX(0);opacity:1} }
+.recap-item-left { display:flex; align-items:center; gap:12px; }
+.recap-item-emoji { font-size:1.3rem; }
+.recap-item-name { font-family:'Oswald',sans-serif; font-size:1.05rem; font-weight:500; letter-spacing:.03em; }
+.recap-item-price { font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:700; color:var(--gold); }
+.recap-total { margin-top:16px; padding:16px 0 0; display:flex; justify-content:space-between; align-items:center; }
+.recap-total-label { font-size:0.75rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--muted); }
+.recap-total-amount { font-family:'Oswald',sans-serif; font-size:2.4rem; font-weight:700; color:var(--gold2); }
+.recap-footer { padding:12px 16px 28px; flex-shrink:0; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:10px; }
+.btn-validate { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#111009; border:none; border-radius:14px; padding:18px; width:100%; font-family:'Oswald',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; box-shadow:0 4px 20px rgba(212,168,67,.3); transition:transform .1s; }
+.btn-validate:active { transform:scale(.98); }
+.btn-back { background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px; width:100%; font-size:.85rem; letter-spacing:.06em; cursor:pointer; }
+
+/* ═══════════════════════
+   ÉCRAN 4 — UPSELL CIRE
+═══════════════════════ */
+#s-upsell {
+  justify-content:flex-end;
+  background:
+    radial-gradient(120% 70% at 50% 0%,#3a1410 0%,transparent 55%),
+    radial-gradient(100% 60% at 50% 100%,#1a0d0a 0%,var(--bg) 70%);
+}
+.upsell-visual { flex:1; position:relative; display:flex; align-items:center; justify-content:center; }
+.upsell-halo { position:absolute; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(192,57,43,.4),transparent 65%); animation:breathe 5s ease-in-out infinite; }
+.upsell-glyph { font-size:10rem; line-height:1; position:relative; filter:drop-shadow(0 30px 50px rgba(192,57,43,.45)); animation:floatY 4s ease-in-out infinite; }
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+.upsell-sheet { background:linear-gradient(180deg,rgba(20,16,10,.4),#100d08 30%); padding:24px 24px 44px; text-align:center; }
+.upsell-kicker { font:600 .7rem 'Barlow Condensed',sans-serif; letter-spacing:.22em; text-transform:uppercase; color:var(--red); margin-bottom:10px; }
+.upsell-title { font:700 2.2rem/1.05 'Oswald',sans-serif; text-transform:uppercase; letter-spacing:.02em; margin-bottom:10px; }
+.upsell-desc { font:300 1rem/1.6 'Barlow Condensed',sans-serif; color:#c0b89a; max-width:300px; margin:0 auto 16px; }
+.upsell-price-row { margin-bottom:6px; }
+.upsell-price-row s { font:300 1rem 'Barlow Condensed',sans-serif; color:var(--muted); margin-right:8px; }
+.upsell-price-row b { font:700 2.4rem 'Oswald',sans-serif; color:var(--gold2); }
+.upsell-note { font:300 .8rem 'Barlow Condensed',sans-serif; color:var(--muted); margin-bottom:22px; }
+.btn-upsell-yes { width:100%; max-width:360px; padding:20px; border:none; border-radius:16px; background:linear-gradient(135deg,#e0573f,var(--red)); color:#fff; font:700 1.3rem 'Oswald',sans-serif; letter-spacing:.08em; text-transform:uppercase; box-shadow:0 10px 30px -8px rgba(192,57,43,.6); cursor:pointer; transition:transform .15s; }
+.btn-upsell-yes:active { transform:scale(.97); }
+.btn-upsell-skip { display:block; margin:14px auto 0; background:none; border:none; color:var(--muted); font:300 .85rem 'Barlow Condensed',sans-serif; text-decoration:underline; text-underline-offset:3px; cursor:pointer; width:100%; text-align:center; }
+
+/* ═══════════════════════
+   ÉCRAN 5 — PRÉNOM
+═══════════════════════ */
+#s-name { justify-content:center; align-items:center; background:radial-gradient(ellipse at 50% 50%,#1e1a0a 0%,var(--bg) 70%); padding:32px; }
+.name-inner { width:100%; max-width:340px; text-align:center; }
+.scissors-anim { font-size:2.8rem; margin-bottom:18px; display:inline-block; animation:snip 1.5s ease-in-out infinite; }
+@keyframes snip { 0%,100%{transform:rotate(-10deg) scale(1)} 50%{transform:rotate(10deg) scale(1.1)} }
+.name-title { font-family:'Oswald',sans-serif; font-size:2.2rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background:linear-gradient(135deg,var(--gold),var(--gold2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; line-height:1.1; }
+.name-sub { font-size:.9rem; color:var(--muted); margin-bottom:30px; line-height:1.6; font-weight:300; }
+.name-input { width:100%; background:var(--bg2); border:1.5px solid var(--border); border-radius:14px; padding:18px 20px; font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:400; letter-spacing:.04em; color:var(--white); text-align:center; outline:none; margin-bottom:14px; transition:border-color .2s, box-shadow .2s; -webkit-appearance:none; }
+.name-input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,168,67,.12); }
+.name-input::placeholder { color:var(--muted); }
+
+/* ═══════════════════════
+   ÉCRAN 6 — CONFIRMATION
+═══════════════════════ */
+#s-confirm { justify-content:center; align-items:center; background:radial-gradient(ellipse at 50% 30%,#1a1a08 0%,var(--bg) 70%); padding:32px; text-align:center; }
+.confirm-inner { max-width:320px; width:100%; }
+.confirm-ring { width:84px; height:84px; border-radius:50%; border:2px solid var(--gold); display:flex; align-items:center; justify-content:center; margin:0 auto 22px; animation:ringIn .5s cubic-bezier(.34,1.5,.64,1) both; box-shadow:0 0 30px rgba(212,168,67,.25); background:linear-gradient(135deg,#1e1a08,#2a2410); font-size:2.2rem; }
+@keyframes ringIn { from{transform:scale(0) rotate(-30deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.confirm-name { font-family:'Oswald',sans-serif; font-size:2.2rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--gold2); margin-bottom:6px; animation:fadeIn .4s .2s both; }
+.confirm-msg { font-size:.9rem; color:var(--muted); line-height:1.7; margin-bottom:24px; animation:fadeIn .4s .3s both; }
+.confirm-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:16px 20px; margin-bottom:20px; text-align:left; animation:slideUp .4s .25s cubic-bezier(.22,1,.36,1) both; }
+.confirm-card-title { font-size:.65rem; text-transform:uppercase; letter-spacing:.16em; color:var(--gold3); margin-bottom:12px; }
+.confirm-item { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:.9rem; }
+.confirm-item:not(:last-child) { border-bottom:1px solid rgba(255,255,255,.04); }
+.confirm-item-name { color:#c0b89a; }
+.confirm-item-price { font-family:'Oswald',sans-serif; font-size:.95rem; color:var(--gold); }
+.confirm-total { display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--border); margin-top:4px; }
+.confirm-total span:first-child { font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); align-self:flex-end; }
+.confirm-total span:last-child { font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:700; color:var(--gold2); }
+.confirm-social { font:600 .8rem 'Barlow Condensed',sans-serif; color:var(--gold3); margin-bottom:24px; animation:fadeIn .4s .45s both; }
+.btn-restart { background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:14px; width:100%; font-size:.85rem; letter-spacing:.06em; cursor:pointer; animation:fadeIn .4s .5s both; }
+
+/* ─── NOTIF TELEGRAM ─── */
+.notif-toast { position:fixed; top:12px; left:12px; right:12px; background:#1a2a1a; border:1px solid #2d5a2d; border-radius:14px; padding:12px 14px; display:flex; align-items:center; gap:10px; z-index:9999; pointer-events:none; transform:translateY(-140%); transition:transform .45s cubic-bezier(.34,1.3,.64,1); box-shadow:0 8px 24px rgba(0,0,0,.5); }
+.notif-toast.show { transform:translateY(0); }
+.notif-icon-wrap { font-size:1.5rem; flex-shrink:0; }
+.notif-content { flex:1; }
+.notif-app { font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; color:#5cb85c; margin-bottom:2px; font-weight:600; }
+.notif-msg { font-size:.8rem; color:#d4f0d4; font-weight:500; line-height:1.4; }
+.notif-time { font-size:.65rem; color:#3a6b3a; align-self:flex-start; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<!-- NOTIF TELEGRAM SIMULÉE -->
+<div class="notif-toast" id="notif">
+  <div class="notif-icon-wrap">✈️</div>
+  <div class="notif-content">
+    <div class="notif-app">Telegram · Best Barber</div>
+    <div class="notif-msg" id="notif-msg">Nouvelle commande</div>
+  </div>
+  <div class="notif-time">maintenant</div>
+</div>
+
+<!-- BUMP BOTTOM SHEET -->
+<div class="bump-scrim" id="bump-scrim" onclick="closeBump()"></div>
+<div class="bump" id="bump">
+  <div class="bump-head">
+    <div class="bump-glyph" id="bump-glyph">🧴</div>
+    <div class="bump-title" id="bump-title">Tu ajoutes le <span>soin barbe</span> ?</div>
+  </div>
+  <div class="bump-sub" id="bump-sub">8 barbes sur 10 repartent avec le soin. Huile chaude + massage, 5 min. (+8€)</div>
+  <div class="bump-actions">
+    <button class="bump-yes" id="bump-yes" onclick="acceptBump()">Oui, je l'ajoute</button>
+    <button class="bump-no" onclick="closeBump()">Non merci</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 1 : ACCUEIL ══ -->
+<div class="screen active" id="s-home">
+  <div class="home-top">
+    <div class="home-badge">
+      <div class="badge-dot"></div>
+      <span class="badge-text">📍 Best Barber · Grézieu-la-Varenne</span>
+    </div>
+    <div class="home-logo-wrap">
+      <div class="home-logo-circle">
+        <img src="best-barber-logo.jpg" alt="Best Barber">
+      </div>
+    </div>
+    <div class="home-title">Best<span>Barber</span></div>
+    <div class="home-divider"></div>
+    <div class="home-tagline">Composez votre passage en 30 secondes.<br>On s'occupe du reste.</div>
+    <div class="home-social">Déjà 12 passages aujourd'hui</div>
+    <div class="attract-ticker" id="ticker"></div>
+  </div>
+  <div class="home-bottom">
+    <button class="btn-commander" onclick="goTo('s-products')">Commencer</button>
+    <div class="home-features">
+      <div class="feat"><div class="feat-dot"></div>30 secondes</div>
+      <div class="feat"><div class="feat-dot"></div>Sans attente</div>
+      <div class="feat"><div class="feat-dot"></div>Paiement en caisse</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2 : PRODUITS ══ -->
+<div class="screen" id="s-products">
+  <div class="products-header">
+    <div class="stripe" style="height:44px;"></div>
+    <div>
+      <div class="products-header-logo">Best Barber</div>
+      <div class="products-header-sub">Composez votre passage</div>
+    </div>
+  </div>
+
+  <div class="products-scroll">
+    <div class="section-label">Nos prestations</div>
+
+    <!-- COUPE -->
+    <div class="pcard" id="card-0" style="--accent:var(--p-coupe)" onclick="toggleProduct(0)">
+      <div class="pcard-hero">
+        <div class="pcard-glyph">✂️</div>
+      </div>
+      <div class="pcard-check" id="chk-0">+</div>
+      <div class="pcard-body">
+        <div class="pcard-info">
+          <div class="pcard-name">Coupe</div>
+          <div class="pcard-desc">La signature. Dégradé net, finition au rasoir.</div>
+        </div>
+        <div class="pcard-price">15€</div>
+      </div>
+    </div>
+
+    <!-- BARBE -->
+    <div class="pcard" id="card-1" style="--accent:var(--p-barbe)" onclick="toggleProduct(1)">
+      <div class="pcard-hero">
+        <div class="pcard-glyph">🪒</div>
+      </div>
+      <div class="pcard-check" id="chk-1">+</div>
+      <div class="pcard-body">
+        <div class="pcard-info">
+          <div class="pcard-name">Barbe</div>
+          <div class="pcard-desc">Contour dessiné, ligne précise, peau nette.</div>
+          <div class="pcard-social">Souvent pris avec la coupe</div>
+        </div>
+        <div class="pcard-price">15€</div>
+      </div>
+    </div>
+
+    <!-- SOIN BARBE -->
+    <div class="pcard" id="card-2" style="--accent:var(--p-soin)" onclick="toggleProduct(2)">
+      <div class="pcard-hero">
+        <div class="pcard-tag">⭐ Le plus pris</div>
+        <div class="pcard-glyph">🧴</div>
+      </div>
+      <div class="pcard-check" id="chk-2">+</div>
+      <div class="pcard-body">
+        <div class="pcard-info">
+          <div class="pcard-name">Soin barbe</div>
+          <div class="pcard-desc">Huile chaude + massage 5 min. Barbe souple, peau apaisée.</div>
+          <div class="pcard-social">3 clients l'ont pris ce matin</div>
+        </div>
+        <div class="pcard-price">8€</div>
+      </div>
+    </div>
+
+    <!-- PACK -->
+    <div class="section-label" style="margin-top:4px;">Le combo signature</div>
+    <div class="pack-card" id="card-pack" onclick="togglePack()">
+      <div style="flex:1">
+        <div class="pack-label">✦ Pack Complet</div>
+        <div class="pack-desc">Coupe + Barbe + Soin. L'expérience entière.</div>
+        <div class="pack-save">Économie 3€</div>
+      </div>
+      <div class="pack-price">
+        <s>38€</s>
+        <b>35€</b>
+      </div>
+      <div class="pack-check" id="chk-pack">+</div>
+    </div>
+
+  </div>
+
+  <div class="cart-bar" id="cart-bar" onclick="goTo('s-recap')">
+    <div class="cart-left">
+      <div class="cart-bubble" id="cart-count">0</div>
+      <div class="cart-cta">Ma commande<small>Voir le récap</small></div>
+    </div>
+    <div class="cart-amount" id="cart-total-bar">0€</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3 : RÉCAP ══ -->
+<div class="screen" id="s-recap">
+  <div class="recap-header">
+    <div class="recap-header-title">Ma commande</div>
+    <div class="recap-header-sub">Vérifier avant de valider</div>
+  </div>
+  <div class="recap-scroll" id="recap-list"></div>
+  <div class="recap-footer">
+    <button class="btn-validate" onclick="goToUpsell()">Valider →</button>
+    <button class="btn-back" onclick="goTo('s-products')">← Modifier</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4 : UPSELL CIRE ══ -->
+<div class="screen" id="s-upsell">
+  <div class="upsell-visual">
+    <div class="upsell-halo"></div>
+    <div class="upsell-glyph">🫙</div>
+  </div>
+  <div class="upsell-sheet">
+    <div class="upsell-kicker">Avant de partir</div>
+    <div class="upsell-title">Garde le style<br>à la maison</div>
+    <div class="upsell-desc">La cire qu'on utilise sur ta coupe. Tenue mate, toute la journée. Sans elle, la coupe ne tient pas demain.</div>
+    <div class="upsell-price-row"><s>7€</s><b>5€</b></div>
+    <div class="upsell-note">Offre borne — aujourd'hui seulement</div>
+    <button class="btn-upsell-yes" onclick="addCire()">Ajouter ma cire — 5€</button>
+    <button class="btn-upsell-skip" onclick="skipCire()">Non, juste ma coupe</button>
+    <div style="font:300 .75rem 'Barlow Condensed',sans-serif; color:var(--muted); margin-top:10px;">Il en reste peu en stock.</div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 5 : PRÉNOM ══ -->
+<div class="screen" id="s-name">
+  <div class="name-inner">
+    <div class="scissors-anim">✂️</div>
+    <div class="name-title">C'est dans<br>la poche !</div>
+    <div class="name-sub">Votre prénom pour qu'on<br>vous appelle quand c'est votre tour.</div>
+    <input class="name-input" type="text" id="name-input" placeholder="Votre prénom..." autocomplete="off" autocorrect="off" autocapitalize="words">
+    <button class="btn-validate" onclick="submitName()">Envoyer →</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 6 : CONFIRMATION ══ -->
+<div class="screen" id="s-confirm">
+  <div class="confirm-inner">
+    <div class="confirm-ring">✂️</div>
+    <div class="confirm-name" id="confirm-name">C'est noté.</div>
+    <div class="confirm-msg">Votre passage est enregistré.<br>Installez-vous, on vient vous chercher.</div>
+    <div class="confirm-card">
+      <div class="confirm-card-title">Récapitulatif</div>
+      <div id="confirm-items"></div>
+    </div>
+    <div class="confirm-social" id="confirm-social">💈 Vous êtes le 13e aujourd'hui. À tout de suite.</div>
+    <button class="btn-restart" onclick="restart()">↩ Nouvelle commande</button>
+  </div>
+</div>
+
+<script>
+const products = [
+  { id:0, name:'Coupe',      price:15, emoji:'✂️', bumpTarget:1 },
+  { id:1, name:'Barbe',      price:15, emoji:'🪒', bumpTarget:2 },
+  { id:2, name:'Soin barbe', price:8,  emoji:'🧴', bumpTarget:-1 },
+];
+const PACK = { name:'Pack Complet', price:35, emoji:'✦', items:[0,1,2] };
+const CIRE = { name:'Cire coiffante', price:5, emoji:'🫙' };
+
+const cart = [false, false, false]; // coupe, barbe, soin
+let packSelected = false;
+let cireAdded = false;
+let pendingBump = -1;
+
+// ─── TICKER ATTRACT ───
+const ticks = [
+  "✂️ Coupe nette en 15 min",
+  "★ Le soin barbe — le combo signature",
+  "🪒 Barbe + soin, l'expérience entière",
+  "💈 Déjà 12 clients aujourd'hui",
+];
+let tickIdx = 0;
+function rotateTick(){
+  const el = document.getElementById('ticker');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.innerHTML = ticks[tickIdx % ticks.length];
+    el.style.transition = 'opacity .5s';
+    el.style.opacity = 1;
+    tickIdx++;
+  }, 400);
+}
+rotateTick();
+setInterval(rotateTick, 3500);
+
+// ─── NAVIGATION ───
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id === 's-recap') buildRecap();
+  if(id === 's-name') setTimeout(() => document.getElementById('name-input').focus(), 500);
+}
+
+// ─── TOGGLE PRODUIT ───
+function toggleProduct(i){
+  if(packSelected) return; // pack prioritaire
+  const was = cart[i];
+  cart[i] = !cart[i];
+  updateCard(i);
+  updateCartBar();
+  if(!was && cart[i]) triggerBump(i);
+}
+
+function updateCard(i){
+  const card = document.getElementById('card-'+i);
+  const chk = document.getElementById('chk-'+i);
+  if(cart[i] || packSelected){
+    card.classList.add('selected');
+    chk.textContent = '✓';
+  } else {
+    card.classList.remove('selected');
+    chk.textContent = '+';
+  }
+}
+
+// ─── PACK ───
+function togglePack(){
+  packSelected = !packSelected;
+  const pc = document.getElementById('card-pack');
+  const pchk = document.getElementById('chk-pack');
+  if(packSelected){
+    pc.classList.add('selected');
+    pchk.textContent = '✓';
+    PACK.items.forEach(i => { cart[i] = true; updateCard(i); });
+  } else {
+    pc.classList.remove('selected');
+    pchk.textContent = '+';
+    PACK.items.forEach(i => { cart[i] = false; updateCard(i); });
+  }
+  updateCartBar();
+}
+
+// ─── BUMP ───
+const bumpData = {
+  1: { glyph:'🪒', title:'Tu ajoutes la <span>barbe</span> ?', sub:'La plupart ajoutent la barbe juste après. Ne repartez pas à moitié net. (+15€)', idx:1 },
+  2: { glyph:'🧴', title:'Tu ajoutes le <span>soin barbe</span> ?', sub:'8 barbes sur 10 repartent avec le soin. Huile chaude + massage, 5 min. (+8€)', idx:2 },
+};
+function triggerBump(addedIdx){
+  const target = products[addedIdx].bumpTarget;
+  if(target === -1 || cart[target] || packSelected) return;
+  const b = bumpData[target];
+  if(!b) return;
+  pendingBump = target;
+  document.getElementById('bump-glyph').textContent = b.glyph;
+  document.getElementById('bump-title').innerHTML = b.title;
+  document.getElementById('bump-sub').textContent = b.sub;
+  document.getElementById('bump').classList.add('show');
+  document.getElementById('bump-scrim').classList.add('show');
+}
+function acceptBump(){
+  if(pendingBump !== -1){ cart[pendingBump] = true; updateCard(pendingBump); updateCartBar(); }
+  closeBump();
+}
+function closeBump(){
+  document.getElementById('bump').classList.remove('show');
+  document.getElementById('bump-scrim').classList.remove('show');
+  pendingBump = -1;
+}
+
+// ─── CART ───
+function getCartItems(){
+  if(packSelected) return [{ name:PACK.name, price:PACK.price, emoji:PACK.emoji }];
+  return products.filter((_,i) => cart[i]).map(p => ({ name:p.name, price:p.price, emoji:p.emoji }));
+}
+function getTotal(){
+  const items = getCartItems();
+  return items.reduce((s,p) => s + p.price, 0) + (cireAdded ? CIRE.price : 0);
+}
+function updateCartBar(){
+  const items = getCartItems();
+  const total = items.reduce((s,p) => s + p.price, 0);
+  const count = packSelected ? 1 : items.length;
+  document.getElementById('cart-count').textContent = count;
+  document.getElementById('cart-total-bar').textContent = total + '€';
+  document.getElementById('cart-bar').classList.toggle('visible', count > 0);
+}
+
+// ─── RÉCAP ───
+function buildRecap(){
+  const items = getCartItems();
+  const total = items.reduce((s,p) => s + p.price, 0);
+  document.getElementById('recap-list').innerHTML =
+    '<div style="padding:0 0 8px">' +
+    items.map((p,i) => `
+      <div class="recap-item" style="animation-delay:${i*.07}s">
+        <div class="recap-item-left">
+          <span class="recap-item-emoji">${p.emoji}</span>
+          <span class="recap-item-name">${p.name}</span>
+        </div>
+        <span class="recap-item-price">${p.price}€</span>
+      </div>`).join('') +
+    `<div class="recap-total">
+      <span class="recap-total-label">Total</span>
+      <span class="recap-total-amount">${total}€</span>
+    </div></div>`;
+}
+
+// ─── UPSELL CIRE ───
+function goToUpsell(){
+  const hasCire = getCartItems().some(i => i.name === 'Cire coiffante') || cireAdded;
+  if(hasCire || packSelected){
+    goTo('s-name');
+  } else {
+    goTo('s-upsell');
+  }
+}
+function addCire(){ cireAdded = true; goTo('s-name'); }
+function skipCire(){ goTo('s-name'); }
+
+// ─── SOUMISSION ───
+function submitName(){
+  const name = document.getElementById('name-input').value.trim() || 'Client';
+  const items = getCartItems();
+  if(cireAdded) items.push({ name:CIRE.name, price:CIRE.price, emoji:CIRE.emoji });
+  const total = items.reduce((s,p) => s + p.price, 0);
+
+  document.getElementById('confirm-name').textContent = 'C\'est noté, ' + name + '.';
+  document.getElementById('confirm-items').innerHTML =
+    items.map(p => `
+      <div class="confirm-item">
+        <span class="confirm-item-name">${p.emoji} ${p.name}</span>
+        <span class="confirm-item-price">${p.price}€</span>
+      </div>`).join('') +
+    `<div class="confirm-total">
+      <span>Total</span><span>${total}€</span>
+    </div>`;
+
+  document.getElementById('notif-msg').textContent =
+    `🔔 ${name} — ${items.map(p => p.name).join(', ')} · ${total}€`;
+
+  goTo('s-confirm');
+  setTimeout(() => {
+    document.getElementById('notif').classList.add('show');
+    setTimeout(() => document.getElementById('notif').classList.remove('show'), 4200);
+  }, 900);
+}
+
+// ─── RESTART ───
+function restart(){
+  cart.fill(false);
+  packSelected = false;
+  cireAdded = false;
+  pendingBump = -1;
+  products.forEach((_,i) => updateCard(i));
+  const pc = document.getElementById('card-pack');
+  const pchk = document.getElementById('chk-pack');
+  pc.classList.remove('selected');
+  pchk.textContent = '+';
+  document.getElementById('name-input').value = '';
+  updateCartBar();
+  goTo('s-home');
+}
+</script>
+</body>
+</html>
