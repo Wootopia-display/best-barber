@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Best Barber — Affichage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow+Condensed:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg: #0e0c08;
+  --gold: #d4a843;
+  --gold2: #f0c96a;
+  --white: #f5f0e8;
+  --muted: #7a7060;
+  --red: #c0392b;
+  --p-coupe: #b8763a;
+  --p-barbe: #7a4a2a;
+  --p-soin: #2f6f5e;
+  --p-cire: #c0392b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  height:100%; width:100%;
+  background:var(--bg);
+  color:var(--white);
+  font-family:'Barlow Condensed',sans-serif;
+  overflow:hidden;
+  touch-action:none;
+  user-select:none;
+}
+
+/* grain */
+body::before {
+  content:''; position:fixed; inset:0; z-index:999; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.5;
+}
+
+/* FLASH TRANSITION */
+.flash {
+  position:fixed; inset:0; z-index:990; background:#fff;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.08s ease;
+}
+.flash.on { opacity:1; }
+
+/* SLIDES */
+.slide {
+  position:fixed; inset:0;
+  display:flex; flex-direction:column;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.3s ease;
+}
+.slide.active { opacity:1; }
+
+/* ═══ SLIDE 1 — IDENTITÉ ═══ */
+#slide-1 {
+  background: radial-gradient(ellipse at 50% 20%, #2a2010 0%, var(--bg) 60%);
+  align-items:center; justify-content:center; gap:0;
+}
+.s1-top {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:40px 32px 20px;
+}
+.s1-logo {
+  width:160px; height:160px; border-radius:50%;
+  border:3px solid var(--gold);
+  overflow:hidden; margin-bottom:32px;
+  box-shadow:0 0 60px rgba(212,168,67,0.25), inset 0 0 30px rgba(0,0,0,0.5);
+  animation:breathe 4s ease-in-out infinite;
+}
+@keyframes breathe { 0%,100%{box-shadow:0 0 40px rgba(212,168,67,0.2)} 50%{box-shadow:0 0 80px rgba(212,168,67,0.45)} }
+.s1-logo img { width:100%; height:100%; object-fit:contain; }
+.s1-title {
+  font-family:'Oswald',sans-serif; font-size:4.5rem; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase; text-align:center; line-height:0.9;
+  color:var(--white);
+}
+.s1-title span { color:var(--gold); display:block; }
+.s1-divider { width:80px; height:3px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:24px auto; }
+.s1-tagline { font-size:1.4rem; color:#c0b89a; text-align:center; line-height:1.5; max-width:280px; font-weight:300; }
+
+.s1-bottom {
+  padding:0 32px 48px; text-align:center;
+}
+.s1-social { font:600 1rem 'Barlow Condensed',sans-serif; color:var(--gold3,#8a6a1a); letter-spacing:0.08em; margin-bottom:16px; }
+.s1-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:rgba(212,168,67,0.1); border:1px solid rgba(212,168,67,0.3);
+  border-radius:100px; padding:10px 24px;
+}
+.s1-badge-dot { width:8px; height:8px; background:var(--gold); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.5)} }
+.s1-badge-text { font-size:0.8rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--gold); font-weight:600; }
+
+/* ═══ SLIDE 2 — SOIN BARBE ═══ */
+#slide-2 {
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb,var(--p-soin) 60%,transparent) 0%, transparent 55%),
+    var(--bg);
+}
+/* ═══ SLIDE 3 — PACK ═══ */
+#slide-3 {
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb,var(--gold) 40%,transparent) 0%, transparent 55%),
+    var(--bg);
+}
+/* ═══ SLIDE 4 — PREUVE SOCIALE ═══ */
+#slide-4 {
+  background: radial-gradient(ellipse at 50% 30%, #1a1a08 0%, var(--bg) 65%);
+  align-items:center; justify-content:center;
+}
+/* ═══ SLIDE 5 — CIRE ═══ */
+#slide-5 {
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb,var(--red) 50%,transparent) 0%, transparent 55%),
+    var(--bg);
+}
+
+/* ─── TEMPLATE PRODUIT (slides 2, 3, 5) ─── */
+.prod-slide { flex:1; display:flex; flex-direction:column; align-items:center; }
+
+.prod-hero {
+  width:100%; flex:1; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.prod-glyph {
+  font-size:14rem; line-height:1; position:relative; z-index:2;
+  filter:drop-shadow(0 30px 60px rgba(0,0,0,0.6));
+  animation:floatY 4s ease-in-out infinite;
+}
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+.prod-halo {
+  position:absolute; width:320px; height:320px; border-radius:50%;
+  background:radial-gradient(circle,var(--halo-color,rgba(212,168,67,.4)),transparent 65%);
+  animation:breathe 5s ease-in-out infinite;
+}
+
+.prod-body {
+  width:100%; padding:24px 28px 0;
+  border-top:1px solid rgba(255,255,255,0.07);
+}
+.prod-kicker {
+  font:600 0.7rem 'Barlow Condensed',sans-serif; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--accent,var(--gold)); margin-bottom:10px;
+}
+.prod-name {
+  font-family:'Oswald',sans-serif; font-size:3.6rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.03em; line-height:0.95;
+  margin-bottom:10px;
+}
+.prod-desc {
+  font:300 1.2rem/1.5 'Barlow Condensed',sans-serif; color:#c0b89a;
+  margin-bottom:16px;
+}
+.prod-tag {
+  display:inline-block;
+  font:600 0.7rem 'Barlow Condensed',sans-serif; letter-spacing:0.16em; text-transform:uppercase;
+  background:var(--accent,var(--gold)); color:#111;
+  padding:6px 14px; border-radius:8px; margin-bottom:20px;
+}
+.prod-tag.red { background:var(--red); color:#fff; }
+
+.prod-price-row { display:flex; align-items:baseline; gap:12px; margin-bottom:8px; }
+.prod-price { font:700 4rem/1 'Oswald',sans-serif; color:var(--accent,var(--gold)); }
+.prod-price-old { font:300 1.4rem 'Barlow Condensed',sans-serif; color:var(--muted); text-decoration:line-through; }
+.prod-social { font:400 0.9rem 'Barlow Condensed',sans-serif; color:var(--muted); margin-bottom:28px; }
+
+/* QR CODE SECTION */
+.qr-section {
+  width:100%; padding:20px 28px 40px;
+  display:flex; align-items:center; gap:20px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.qr-wrap {
+  width:100px; height:100px; flex-shrink:0;
+  background:#fff; border-radius:12px;
+  padding:6px;
+  display:flex; align-items:center; justify-content:center;
+}
+.qr-wrap svg { width:88px; height:88px; }
+.qr-text { flex:1; }
+.qr-cta { font-family:'Oswald',sans-serif; font-size:1.3rem; font-weight:600; letter-spacing:0.04em; color:var(--white); margin-bottom:4px; }
+.qr-url { font:300 0.75rem 'Barlow Condensed',sans-serif; color:var(--muted); letter-spacing:0.06em; }
+
+/* ─── SLIDE 4 SOCIAL ─── */
+.social-slide { padding:48px 32px; text-align:center; }
+.social-num {
+  font-family:'Oswald',sans-serif; font-size:8rem; font-weight:700;
+  color:var(--gold); line-height:1;
+  text-shadow:0 0 60px rgba(212,168,67,0.4);
+}
+.social-unit { font-family:'Oswald',sans-serif; font-size:2rem; font-weight:400; color:var(--gold2); display:block; margin-bottom:8px; }
+.social-label { font:300 1.3rem/1.5 'Barlow Condensed',sans-serif; color:#c0b89a; max-width:260px; margin:0 auto 40px; }
+.social-divider { width:60px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 40px; }
+.social-reviews {
+  display:flex; flex-direction:column; gap:16px;
+}
+.review {
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px; padding:16px 20px; text-align:left;
+}
+.review-stars { color:var(--gold); font-size:1rem; margin-bottom:6px; }
+.review-text { font:300 1rem/1.4 'Barlow Condensed',sans-serif; color:#c0b89a; }
+.review-name { font:600 0.75rem 'Barlow Condensed',sans-serif; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-top:8px; }
+
+/* PROGRESS BAR */
+.progress-bar {
+  position:fixed; bottom:0; left:0; right:0; height:3px; z-index:900;
+  background:rgba(255,255,255,0.08);
+}
+.progress-fill {
+  height:100%; background:var(--gold);
+  width:0%; transition:width linear;
+}
+
+/* SLIDE COUNTER */
+.slide-counter {
+  position:fixed; top:16px; right:16px; z-index:900;
+  font:600 0.65rem 'Barlow Condensed',sans-serif; letter-spacing:0.14em;
+  color:rgba(255,255,255,0.25);
+}
+</style>
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+<div class="slide-counter" id="counter">1 / 5</div>
+
+<!-- ══ SLIDE 1 — IDENTITÉ ══ -->
+<div class="slide active" id="slide-1">
+  <div class="s1-top">
+    <div class="s1-logo"><img src="best-barber-logo.jpg" alt="Best Barber"></div>
+    <div class="s1-title">Best<span>Barber</span></div>
+    <div class="s1-divider"></div>
+    <div class="s1-tagline">Votre barbier à Grézieu-la-Varenne</div>
+  </div>
+  <div class="s1-bottom">
+    <div class="s1-social">Déjà 12 passages aujourd'hui</div>
+    <div class="s1-badge">
+      <div class="s1-badge-dot"></div>
+      <span class="s1-badge-text">Ouvert maintenant</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 2 — SOIN BARBE ══ -->
+<div class="slide" id="slide-2">
+  <div class="prod-slide">
+    <div class="prod-hero" style="--halo-color:rgba(47,111,94,0.45)">
+      <div class="prod-halo"></div>
+      <div class="prod-glyph">🧴</div>
+    </div>
+    <div class="prod-body" style="--accent:var(--p-soin)">
+      <div class="prod-kicker">⭐ Le plus pris ce matin</div>
+      <div class="prod-name">Soin<br>Barbe</div>
+      <div class="prod-desc">Huile chaude + massage 5 min.<br>Barbe souple, peau apaisée.</div>
+      <div class="prod-tag" style="background:var(--p-soin);color:#fff;">3 clients ce matin</div>
+      <div class="prod-price-row">
+        <div class="prod-price" style="color:var(--p-soin)">8€</div>
+      </div>
+      <div class="prod-social">Ne repartez pas sans.</div>
+    </div>
+    <div class="qr-section">
+      <div class="qr-wrap">
+        <!-- QR vers best-barber.pages.dev/demo.html -->
+        <svg viewBox="0 0 29 29" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#fff" d="M0 0h29v29H0z"/>
+          <path fill="#000" d="M0 0h7v1H0zM8 0h1v1H8zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h2v1h-2zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1H0zM6 1h1v1H6zM8 1h1v1H8zM10 1h1v1h-1zM12 1h2v1h-2zM15 1h1v1h-1zM17 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM9 2h1v1H9zM11 2h1v1h-1zM14 2h3v1h-3zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h3v1H8zM12 3h1v1h-1zM14 3h1v1h-1zM17 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h1v1H8zM11 4h3v1h-3zM16 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1H0zM6 5h1v1H6zM9 5h2v1H9zM12 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h2v1h-2zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h2v1H8zM11 7h1v1h-1zM13 7h4v1h-4zM18 7h2v1h-2zM0 8h2v1H0zM3 8h2v1H3zM6 8h2v1H6zM9 8h1v1H9zM11 8h2v1h-2zM15 8h2v1h-2zM18 8h3v1h-3zM22 8h2v1h-2zM25 8h1v1h-1zM27 8h2v1h-2zM1 9h2v1H1zM5 9h1v1H5zM7 9h1v1H7zM10 9h2v1h-2zM13 9h1v1h-1zM15 9h1v1h-1zM18 9h1v1h-1zM21 9h1v1h-1zM23 9h2v1h-2zM26 9h1v1h-1zM0 10h1v1H0zM3 10h1v1H3zM6 10h3v1H6zM10 10h1v1h-1zM12 10h3v1h-3zM17 10h2v1h-2zM21 10h2v1h-2zM24 10h1v1h-1zM26 10h3v1h-3zM0 11h3v1H0zM4 11h2v1H4zM7 11h2v1H7zM10 11h1v1h-1zM12 11h1v1h-1zM14 11h3v1h-3zM19 11h1v1h-1zM21 11h2v1h-2zM24 11h1v1h-1zM27 11h2v1h-2zM1 12h1v1H1zM3 12h3v1H3zM8 12h1v1H8zM11 12h2v1h-2zM15 12h2v1h-2zM18 12h2v1h-2zM21 12h3v1h-3zM25 12h1v1h-1zM28 12h1v1h-1zM0 13h2v1H0zM3 13h1v1H3zM5 13h3v1H5zM10 13h2v1h-2zM13 13h2v1h-2zM16 13h1v1h-1zM18 13h1v1h-1zM21 13h1v1h-1zM24 13h2v1h-2zM27 13h2v1h-2zM0 14h1v1H0zM2 14h2v1H2zM5 14h2v1H5zM9 14h3v1H9zM13 14h1v1h-1zM16 14h3v1h-3zM21 14h2v1h-2zM26 14h1v1h-1zM28 14h1v1h-1zM1 15h2v1H1zM4 15h1v1H4zM7 15h1v1H7zM9 15h1v1H9zM11 15h2v1h-2zM14 15h2v1h-2zM18 15h2v1h-2zM22 15h2v1h-2zM25 15h2v1h-2zM0 16h1v1H0zM3 16h3v1H3zM7 16h1v1H7zM10 16h3v1h-3zM14 16h1v1h-1zM16 16h1v1h-1zM19 16h2v1h-2zM22 16h1v1h-1zM24 16h1v1h-1zM27 16h2v1h-2zM8 17h2v1H8zM11 17h2v1h-2zM14 17h3v1h-3zM19 17h1v1h-1zM21 17h2v1h-2zM25 17h1v1h-1zM27 17h1v1h-1zM0 18h7v1H0zM9 18h3v1H9zM13 18h2v1h-2zM16 18h2v1h-2zM19 18h1v1h-1zM22 18h3v1h-3zM26 18h1v1h-1zM28 18h1v1h-1zM0 19h1v1H0zM6 19h1v1H6zM8 19h1v1H8zM11 19h2v1h-2zM14 19h1v1h-1zM16 19h3v1h-3zM20 19h3v1h-3zM24 19h2v1h-2zM27 19h1v1h-1zM0 20h1v1H0zM2 20h3v1H2zM6 20h1v1H6zM8 20h2v1H8zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h2v1h-2zM25 20h3v1h-3zM0 21h1v1H0zM2 21h3v1H2zM6 21h1v1H6zM9 21h1v1H9zM11 21h3v1h-3zM16 21h2v1h-2zM20 21h2v1h-2zM23 21h1v1h-1zM25 21h1v1h-1zM27 21h2v1h-2zM0 22h1v1H0zM2 22h3v1H2zM6 22h1v1H6zM8 22h1v1H8zM10 22h2v1h-2zM14 22h1v1h-1zM17 22h2v1h-2zM20 22h2v1h-2zM23 22h1v1h-1zM25 22h4v1h-4zM0 23h1v1H0zM6 23h1v1H6zM8 23h2v1H8zM11 23h2v1h-2zM14 23h2v1h-2zM17 23h2v1h-2zM20 23h1v1h-1zM22 23h1v1h-1zM24 23h1v1h-1zM26 23h2v1h-2zM0 24h7v1H0zM8 24h4v1H8zM13 24h1v1h-1zM16 24h1v1h-1zM18 24h2v1h-2zM21 24h2v1h-2zM24 24h1v1h-1zM26 24h1v1h-1zM28 24h1v1h-1z"/>
+        </svg>
+      </div>
+      <div class="qr-text">
+        <div class="qr-cta">Scannez pour commander</div>
+        <div class="qr-url">best-barber.pages.dev</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3 — PACK ══ -->
+<div class="slide" id="slide-3">
+  <div class="prod-slide">
+    <div class="prod-hero" style="--halo-color:rgba(212,168,67,0.4)">
+      <div class="prod-halo"></div>
+      <div class="prod-glyph" style="font-size:10rem; animation-delay:.5s">✦</div>
+    </div>
+    <div class="prod-body" style="--accent:var(--gold)">
+      <div class="prod-kicker">Le combo signature</div>
+      <div class="prod-name">Pack<br>Complet</div>
+      <div class="prod-desc">Coupe + Barbe + Soin.<br>L'expérience entière.</div>
+      <div class="prod-tag">Économie 3€</div>
+      <div class="prod-price-row">
+        <div class="prod-price-old">38€</div>
+        <div class="prod-price">35€</div>
+      </div>
+      <div class="prod-social">Le choix de la plupart de nos clients.</div>
+    </div>
+    <div class="qr-section">
+      <div class="qr-wrap">
+        <svg viewBox="0 0 29 29" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#fff" d="M0 0h29v29H0z"/>
+          <path fill="#000" d="M0 0h7v1H0zM8 0h1v1H8zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h2v1h-2zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1H0zM6 1h1v1H6zM8 1h1v1H8zM10 1h1v1h-1zM12 1h2v1h-2zM15 1h1v1h-1zM17 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM9 2h1v1H9zM11 2h1v1h-1zM14 2h3v1h-3zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h3v1H8zM12 3h1v1h-1zM14 3h1v1h-1zM17 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h1v1H8zM11 4h3v1h-3zM16 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1H0zM6 5h1v1H6zM9 5h2v1H9zM12 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h2v1h-2zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h3v1H8zM12 7h2v1h-2zM15 7h3v1h-3zM20 7h2v1h-2zM0 8h1v1H0zM3 8h3v1H3zM7 8h2v1H7zM10 8h2v1h-2zM14 8h2v1h-2zM18 8h2v1h-2zM21 8h2v1h-2zM25 8h2v1h-2zM28 8h1v1h-1zM1 9h1v1H1zM4 9h2v1H4zM8 9h1v1H8zM11 9h1v1h-1zM13 9h2v1h-2zM17 9h2v1h-2zM21 9h2v1h-2zM24 9h1v1h-1zM27 9h2v1h-2zM0 10h2v1H0zM4 10h2v1H4zM7 10h2v1H7zM11 10h2v1h-2zM15 10h2v1h-2zM19 10h1v1h-1zM22 10h2v1h-2zM25 10h1v1h-1zM27 10h2v1h-2zM1 11h2v1H1zM5 11h1v1H5zM8 11h1v1H8zM11 11h2v1h-2zM15 11h1v1h-1zM17 11h3v1h-3zM21 11h1v1h-1zM24 11h2v1h-2zM28 11h1v1h-1zM0 12h2v1H0zM4 12h1v1H4zM6 12h3v1H6zM10 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM20 12h2v1h-2zM24 12h2v1h-2zM27 12h2v1h-2zM1 13h3v1H1zM6 13h2v1H6zM9 13h2v1H9zM13 13h3v1h-3zM17 13h2v1h-2zM21 13h2v1h-2zM25 13h1v1h-1zM28 13h1v1h-1zM0 14h1v1H0zM3 14h2v1H3zM7 14h3v1H7zM11 14h1v1h-1zM14 14h2v1h-2zM18 14h2v1h-2zM22 14h1v1h-1zM25 14h2v1h-2zM28 14h1v1h-1zM1 15h2v1H1zM5 15h2v1H5zM9 15h2v1H9zM12 15h2v1h-2zM16 15h2v1h-2zM20 15h1v1h-1zM23 15h2v1h-2zM27 15h2v1h-2zM0 16h2v1H0zM4 16h2v1H4zM8 16h2v1H8zM11 16h2v1h-2zM15 16h2v1h-2zM19 16h2v1h-2zM23 16h2v1h-2zM27 16h2v1h-2zM8 17h1v1H8zM11 17h3v1h-3zM15 17h2v1h-2zM19 17h2v1h-2zM23 17h1v1h-1zM26 17h3v1h-3zM0 18h7v1H0zM9 18h2v1H9zM12 18h3v1h-3zM16 18h3v1h-3zM20 18h2v1h-2zM24 18h2v1h-2zM28 18h1v1h-1zM0 19h1v1H0zM6 19h1v1H6zM9 19h1v1H9zM12 19h1v1h-1zM14 19h2v1h-2zM18 19h2v1h-2zM22 19h1v1h-1zM25 19h2v1h-2zM28 19h1v1h-1zM0 20h1v1H0zM2 20h3v1H2zM6 20h1v1H6zM9 20h2v1H9zM13 20h3v1h-3zM17 20h2v1h-2zM21 20h2v1h-2zM25 20h1v1h-1zM27 20h2v1h-2zM0 21h1v1H0zM2 21h3v1H2zM6 21h1v1H6zM8 21h2v1H8zM12 21h2v1h-2zM15 21h3v1h-3zM20 21h1v1h-1zM22 21h2v1h-2zM26 21h1v1h-1zM28 21h1v1h-1zM0 22h1v1H0zM2 22h3v1H2zM6 22h1v1H6zM8 22h3v1H8zM13 22h2v1h-2zM16 22h1v1h-1zM19 22h3v1h-3zM23 22h2v1h-2zM27 22h2v1h-2zM0 23h1v1H0zM6 23h1v1H6zM8 23h1v1H8zM11 23h2v1h-2zM14 23h1v1h-1zM17 23h1v1h-1zM19 23h2v1h-2zM23 23h2v1h-2zM27 23h2v1h-2zM0 24h7v1H0zM8 24h3v1H8zM12 24h2v1h-2zM15 24h2v1h-2zM19 24h2v1h-2zM22 24h2v1h-2zM26 24h3v1h-3z"/>
+        </svg>
+      </div>
+      <div class="qr-text">
+        <div class="qr-cta">Commander le pack</div>
+        <div class="qr-url">best-barber.pages.dev</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 4 — PREUVE SOCIALE ══ -->
+<div class="slide" id="slide-4">
+  <div class="social-slide">
+    <div class="social-num">12<span class="social-unit">passages</span></div>
+    <div class="social-label">aujourd'hui à Best Barber.<br>Rejoignez-les.</div>
+    <div class="social-divider"></div>
+    <div class="social-reviews">
+      <div class="review">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Le soin barbe, j'aurais pas pensé à le prendre. Maintenant j'y reviens pour ça."</div>
+        <div class="review-name">— Karim, client régulier</div>
+      </div>
+      <div class="review">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Propre, rapide, et le pack à 35€ c'est imbattable."</div>
+        <div class="review-name">— Thomas, Grézieu</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 5 — CIRE ══ -->
+<div class="slide" id="slide-5">
+  <div class="prod-slide">
+    <div class="prod-hero" style="--halo-color:rgba(192,57,43,0.45)">
+      <div class="prod-halo"></div>
+      <div class="prod-glyph">🫙</div>
+    </div>
+    <div class="prod-body" style="--accent:var(--red)">
+      <div class="prod-kicker">Stock limité</div>
+      <div class="prod-name">Cire<br>Coiffante</div>
+      <div class="prod-desc">La cire qu'on utilise sur vos coupes.<br>Tenue mate toute la journée.</div>
+      <div class="prod-tag red">Offre borne — 5€</div>
+      <div class="prod-price-row">
+        <div class="prod-price-old">7€</div>
+        <div class="prod-price" style="color:var(--red)">5€</div>
+      </div>
+      <div class="prod-social">Sans cire, la coupe ne tient pas demain.</div>
+    </div>
+    <div class="qr-section">
+      <div class="qr-wrap">
+        <svg viewBox="0 0 29 29" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#fff" d="M0 0h29v29H0z"/>
+          <path fill="#000" d="M0 0h7v1H0zM8 0h1v1H8zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h2v1h-2zM19 0h1v1h-1zM22 0h7v1h-7zM0 1h1v1H0zM6 1h1v1H6zM8 1h1v1H8zM10 1h1v1h-1zM12 1h2v1h-2zM15 1h1v1h-1zM17 1h1v1h-1zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM9 2h1v1H9zM11 2h1v1h-1zM14 2h3v1h-3zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM8 3h3v1H8zM12 3h1v1h-1zM14 3h1v1h-1zM17 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM8 4h1v1H8zM11 4h3v1h-3zM16 4h3v1h-3zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1H0zM6 5h1v1H6zM9 5h2v1H9zM12 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h2v1h-2zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM9 7h2v1H9zM12 7h3v1h-3zM16 7h2v1h-2zM20 7h3v1h-3zM1 8h3v1H1zM5 8h3v1H5zM10 8h3v1h-3zM14 8h1v1h-1zM17 8h2v1h-2zM21 8h3v1h-3zM26 8h3v1h-3zM0 9h2v1H0zM4 9h3v1H4zM9 9h2v1H9zM12 9h2v1h-2zM16 9h3v1h-3zM21 9h1v1h-1zM24 9h2v1h-2zM28 9h1v1h-1zM1 10h2v1H1zM5 10h1v1H5zM8 10h3v1H8zM12 10h3v1h-3zM17 10h2v1h-2zM21 10h3v1h-3zM26 10h3v1h-3zM0 11h1v1H0zM3 11h4v1H3zM8 11h2v1H8zM12 11h1v1h-1zM15 11h3v1h-3zM20 11h2v1h-2zM24 11h3v1h-3zM28 11h1v1h-1zM1 12h2v1H1zM5 12h2v1H5zM9 12h3v1H9zM13 12h2v1h-2zM17 12h3v1h-3zM22 12h2v1h-2zM26 12h3v1h-3zM0 13h1v1H0zM3 13h3v1H3zM8 13h1v1H8zM11 13h3v1h-3zM15 13h1v1h-1zM18 13h3v1h-3zM23 13h2v1h-2zM27 13h2v1h-2zM1 14h4v1H1zM7 14h2v1H7zM11 14h2v1h-2zM15 14h3v1h-3zM20 14h2v1h-2zM24 14h1v1h-1zM27 14h2v1h-2zM0 15h2v1H0zM4 15h3v1H4zM9 15h3v1H9zM13 15h2v1h-2zM17 15h2v1h-2zM21 15h3v1h-3zM26 15h3v1h-3zM1 16h3v1H1zM6 16h3v1H6zM11 16h3v1h-3zM16 16h2v1h-2zM20 16h1v1h-1zM23 16h3v1h-3zM28 16h1v1h-1zM9 17h2v1H9zM13 17h3v1h-3zM18 17h2v1h-2zM22 17h3v1h-3zM27 17h2v1h-2zM0 18h7v1H0zM8 18h3v1H8zM13 18h2v1h-2zM17 18h3v1h-3zM22 18h2v1h-2zM26 18h3v1h-3zM0 19h1v1H0zM6 19h1v1H6zM8 19h2v1H8zM12 19h3v1h-3zM17 19h2v1h-2zM21 19h2v1h-2zM25 19h1v1h-1zM28 19h1v1h-1zM0 20h1v1H0zM2 20h3v1H2zM6 20h1v1H6zM9 20h3v1H9zM14 20h3v1h-3zM19 20h1v1h-1zM22 20h3v1h-3zM27 20h2v1h-2zM0 21h1v1H0zM2 21h3v1H2zM6 21h1v1H6zM8 21h3v1H8zM13 21h2v1h-2zM17 21h3v1h-3zM22 21h1v1h-1zM25 21h2v1h-2zM28 21h1v1h-1zM0 22h1v1H0zM2 22h3v1H2zM6 22h1v1H6zM9 22h2v1H9zM13 22h3v1h-3zM18 22h2v1h-2zM22 22h3v1h-3zM27 22h2v1h-2zM0 23h1v1H0zM6 23h1v1H6zM8 23h3v1H8zM12 23h2v1h-2zM16 23h3v1h-3zM21 23h1v1h-1zM24 23h3v1h-3zM28 23h1v1h-1zM0 24h7v1H0zM9 24h2v1H9zM13 24h3v1h-3zM18 24h2v1h-2zM22 24h3v1h-3zM27 24h2v1h-2z"/>
+        </svg>
+      </div>
+      <div class="qr-text">
+        <div class="qr-cta">Commander la cire</div>
+        <div class="qr-url">best-barber.pages.dev</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SLIDES = 5;
+const DURATION = 6000; // ms par slide
+let current = 0;
+let timer = null;
+
+const slides = document.querySelectorAll('.slide');
+const flash = document.getElementById('flash');
+const progress = document.getElementById('progress');
+const counter = document.getElementById('counter');
+
+function showSlide(idx){
+  slides.forEach(s => s.classList.remove('active'));
+  slides[idx].classList.add('active');
+  counter.textContent = (idx+1) + ' / ' + SLIDES;
+  // progress bar
+  progress.style.transition = 'none';
+  progress.style.width = '0%';
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      progress.style.transition = `width ${DURATION}ms linear`;
+      progress.style.width = '100%';
+    });
+  });
+}
+
+function nextSlide(){
+  // flash blanc
+  flash.classList.add('on');
+  setTimeout(() => {
+    current = (current + 1) % SLIDES;
+    showSlide(current);
+    flash.classList.remove('on');
+  }, 80);
+}
+
+function startLoop(){
+  showSlide(0);
+  timer = setInterval(nextSlide, DURATION);
+}
+
+// tap pour avancer manuellement
+document.addEventListener('click', () => {
+  clearInterval(timer);
+  nextSlide();
+  timer = setInterval(nextSlide, DURATION);
+});
+
+startLoop();
+</script>
+</body>
+</html>
